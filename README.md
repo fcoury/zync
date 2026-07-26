@@ -36,6 +36,53 @@ that accepts image paste.
 
 Text clipboard changes are synced too.
 
+## Connect through a custom SSH port
+
+Use an SSH URI when the remote machine listens on a nonstandard port:
+
+```sh
+zync connect ssh://user@other-mac:2222
+```
+
+You can also configure an SSH host alias in `~/.ssh/config`:
+
+```sshconfig
+Host home
+    HostName other-mac
+    User user
+    Port 2222
+```
+
+Then connect using the alias:
+
+```sh
+zync connect ssh://home
+```
+
+## Access the remote clipboard from an SSH session
+
+On macOS, SSH commands can run in the `Background` launchd session instead of
+the logged-in user's graphical `Aqua` session. If the remote agent fails with
+`pbcopy exited with exit status: 1`, start it in the graphical session using
+`launchctl asuser`.
+
+On the remote Mac, find your numeric user ID:
+
+```sh
+id -u
+```
+
+Then run this on the local Mac, replacing `501` and the binary path with the
+remote user's actual ID and installation path:
+
+```sh
+zync connect ssh://home \
+  --remote-bin 'launchctl asuser 501 /Users/user/.cargo/bin/zync'
+```
+
+`zync connect` starts the remote agent automatically; do not run `zync agent`
+separately.
+
 ## Commands
 
 ```text
